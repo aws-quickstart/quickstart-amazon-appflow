@@ -1,6 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: AWS AppFlow Quick Start Deployment. (qs-1qpmn11zz)
+Description: AWS AppFlow Quick Start Deployment. (qs-1rudmgmaj)
 Metadata:
+  QuickStartDocumentation:
+    EntrypointName: "Parameters for deploying into an existing VPC"
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:

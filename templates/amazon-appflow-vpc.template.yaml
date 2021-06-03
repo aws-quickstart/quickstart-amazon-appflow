@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Creation Of VPC infrastructure. (qs-1qpmn11zz)
+Description: Creation Of VPC infrastructure. (qs-1rudmgmbr)
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:

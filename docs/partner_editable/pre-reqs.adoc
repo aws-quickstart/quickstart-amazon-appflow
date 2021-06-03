@@ -1,13 +1,40 @@
 // If no preperation is required, remove all content from here
 
-==== Prepare your AWS account
+==== Create AppFlow connection with Salesforce
 
-_Describe any setup required in the AWS account prior to template launch_
+. Create a new connection in AWS AppFlow
+. Go to Connections in AppFlow
+. From connectors choose Salesforce
+. Then click on Create Connection
 
-==== Prepare your {partner-company-name} account
+[#prereq1]
+.Amazon AppFlow connections
+image::../images/Connector1.png[Connector]
 
-_Describe any setup required in the partner portal/account prior to template launch_
+[start=5]
+. Select Sandbox or Production based on the Salesforce instance type and add a new name in connection name. Then click on Continue.
 
-==== Prepare for the deployment
+[#prereq2]
+.Create new connection
+image::../images/Connector2.png[Connector]
 
-_Describe any preparation required to complete the product build, such as obtaining licenses or placing files in S3_
+[start=6]
+. Add credentials of Salesforce user account and click on Log In
+
+[#prereq3]
+.Entering Salesforce credentials
+image::../images/Connector3.png[Connector]
+
+[start=7]
+. Click on *Allow* to allow access
+
+[#prereq4]
+.Allowing AppFlow access to Salesforce
+image::../images/Connector4.png[Connector]
+
+[start=8]
+. Verify that the new connection name is listed in connections list. Note that this connection name will be needed when deploying the Quick Start.
+
+[#prereq4]
+.Amazon AppFlow connections
+image::../images/Connector4.png[Connector]

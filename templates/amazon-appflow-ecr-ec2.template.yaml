@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Creation of ECR-EC2 infrastructure. (qs-1qpmn11zz)
+Description: Creation of ECR-EC2 infrastructure. (qs-1rudmgm6o)
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:

@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: This CloudFormation Template invokes another template responsible for copying files to a local region S3 Bucket for AWS Lambda. (qs-1qpmn11zz)
+Description: This CloudFormation Template invokes another template responsible for copying files to a local region S3 Bucket for AWS Lambda. (qs-1rudmgm9i)
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
