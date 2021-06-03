@@ -1,0 +1,169 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Creation of scheduled AppFlow with existing resources. (qs-1qpmn11zz)
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Network configuration
+        Parameters:
+          - PrivateSubnet1ID
+          - PrivateSubnet2ID
+          - LambdaSecurityGroupID
+      - Label:
+          default: Database configuration
+        Parameters:
+          - DBName
+          - DBUser
+          - DBPassword
+          - RDSEndpoint
+      - Label:
+          default: IAM role configuration
+        Parameters:
+          - CustomResourceRoleARN
+      - Label:
+          default: App flow configuration
+        Parameters:
+          - Connection
+          - Objects
+      - Label:
+          default: S3 bucket configuration
+        Parameters:
+          - S3BucketName
+          - LambdaZipBucket
+      - Label:
+          default: ECR configuration
+        Parameters:
+          - ImageURI
+      - Label:
+          default: AWS Quick Start configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix 
+          - QSS3BucketRegion
+    ParameterLabels:
+      PrivateSubnet1ID:
+        default: Private subnet 1 ID
+      PrivateSubnet2ID:
+        default: Private subnet 2 ID
+      LambdaSecurityGroupID:
+        default: Lambda security group ID
+      DBName:
+        default: Database name
+      DBUser:
+        default: Database primary username
+      DBPassword:
+        default: Database primary password
+      RDSEndpoint: 
+        default: Database connection string
+      CustomResourceRoleARN:
+        default: Custom resource (IAM role) ARN
+      ImageURI:
+        default: Elastic container registry image URI
+      S3BucketName:
+        default: Salesforce objects S3 bucket name
+      LambdaZipBucket:
+        default: Lambda zip files S3 bucket name
+      Connection:
+        default: Salesforce connector name
+      Objects:
+        default: Salesforce objects name
+      QSS3BucketName:
+        default: Quick Start S3 bucket name
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket region
+      QSS3KeyPrefix:
+        default: Quick Start S3 key prefix
+
+Parameters:
+  S3BucketName:
+    Type: String
+    Description: Name of an existing S3 bucket that stores your salesforce objects data.
+  LambdaZipBucket:
+    Type: String
+    Description: Name of an existing S3 bucket that stores your lambda zip files.
+  CustomResourceRoleARN:
+    Description: Existing IAM role Amazon resource name (ARN) to be granted access to the custom resources.
+    Type: String
+  ImageURI:
+    Type: String
+    Description: Existing image URI.
+  PrivateSubnet1ID:
+    Type: "AWS::EC2::Subnet::Id"
+    Description: ID of the private subnet in Availability Zone 1 of your existing VPC (e.g., subnet-fe9a8b32).
+  PrivateSubnet2ID:
+    Type: "AWS::EC2::Subnet::Id"
+    Description: ID of the private subnet in Availability Zone 2 of your existing VPC (e.g., subnet-fe9a8b32).
+  LambdaSecurityGroupID:
+    Type: "AWS::EC2::SecurityGroup::Id"
+    Description: ID of your existing lambda security group.
+  QSS3BucketName:
+    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
+    ConstraintDescription: Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Default: aws-quickstart
+    Description: S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Type: String  
+  QSS3KeyPrefix:
+    AllowedPattern: ^[0-9a-zA-Z-/.]*$
+    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), periods (.) and forward slash (/).
+    Description: S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), periods (.) and forward slash (/).
+    Type: String
+  QSS3BucketRegion:
+    Default: 'us-east-1'
+    Description: Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.
+    Type: String
+  DBName:
+    Type: String
+    MinLength: '1'
+    MaxLength: '64'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+    Description: Name of an existing Amazon Postgres database.
+  DBUser:
+    Description: Name of an existing database admin account username.
+    Type: String
+    MinLength: '1'
+    MaxLength: '16'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+  DBPassword:
+    NoEcho: 'true'
+    Description: Enter existing database admin account password.
+    Type: String
+    MinLength: '1'
+    MaxLength: '41'
+    AllowedPattern: ^(?=^.{8,255}$)(?=.*[a-z])(?=.*[A-Z])(?=.*\d)((?=.*[^A-Za-z0-9])(?!.*[@/"'])).*$
+    ConstraintDescription:  Min 8 chars. Must include 1 uppercase, 1 lowercase, 1 number, 1 (non / @ " ') symbol
+  RDSEndpoint:
+    Description: Name of an existing database connection string.
+    Type: String
+  Connection:
+    Description: The name of the salesforce connector.
+    Type: String
+  Objects:
+    Description: The name of the salesforce objects (e.g., Account,Contact,Lead,..).
+    Type: CommaDelimitedList 
+Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, ""]
+
+Resources:
+  LambdaAppFlowStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+        Parameters:
+          S3BucketName: !Ref S3BucketName
+          LambdaZipBucket : !Ref LambdaZipBucket
+          DBName: !Ref DBName
+          DBUser: !Ref DBUser
+          DBPassword: !Ref DBPassword
+          RDSEndpoint: !Ref RDSEndpoint
+          PrivateSubnet1ID: !Ref PrivateSubnet1ID
+          PrivateSubnet2ID: !Ref PrivateSubnet2ID
+          LambdaSecurityGroupID: !Ref LambdaSecurityGroupID 
+          ImageURI: !Ref ImageURI
+          CustomResourceRoleARN: !Ref CustomResourceRoleARN
+          Connection: !Ref Connection
+          Objects: !Join [ ",", !Ref Objects]
+        TemplateURL: !Sub
+          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/amazon-appflow-lambda-from-existing-resources.template.yaml'
+          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]

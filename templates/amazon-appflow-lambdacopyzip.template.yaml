@@ -1,0 +1,175 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: This CloudFormation Template invokes another template responsible for copying files to a local region S3 Bucket for AWS Lambda. (qs-1qpmn11zz)
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: S3 bucket configuration
+        Parameters:
+          - LambdaZipBucket
+      - Label:
+          default: Instance configuration
+        Parameters:
+          - InstanceID
+      - Label:
+          default: ECR configuration
+        Parameters:
+          - ECRRepoName
+      - Label:
+          default: AWS Quick Start configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+    ParameterLabels:
+      QSS3BucketName:
+        default: Quick Start S3 bucket name
+      QSS3KeyPrefix:
+        default: Quick Start S3 key prefix
+      LambdaZipBucket:
+        default: Lambda zip files S3 bucket name
+      InstanceID:
+        default: ID of the ec2 instance
+      ECRRepoName:
+        default: Elastic container registry name
+Parameters:
+  QSS3BucketName:
+    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
+    ConstraintDescription: Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Description: S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Type: String
+  QSS3KeyPrefix:
+    AllowedPattern: ^[0-9a-zA-Z-/.]*$
+    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), periods (.) and forward slash (/).
+    Description: S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), periods (.) and forward slash (/).
+    Type: String 
+  LambdaZipBucket:
+    Description: The name of the S3 bucket that stores your lambda zip files.
+    Type: String
+  InstanceID:
+    Description: ID of the ec2 instance.
+    Type: String
+  ECRRepoName:
+    Description: Name of the elastic container registry.
+    Type: String
+Conditions:
+  CreateDestBucket: !Equals [!Ref LambdaZipBucket, ""]
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, ""]
+Resources:
+  LambdaZipsBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Ref LambdaZipBucket 
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+  CopyRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: sts:AssumeRole
+      Policies:
+      - PolicyName: Copyzip
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+          - Sid: S3Get
+            Effect: Allow
+            Action:
+            - s3:GetObject
+            - s3:GetObjectTagging
+            Resource: !Sub
+              - arn:${AWS::Partition}:s3:::${S3Bucket}/${QSS3KeyPrefix}*
+              - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+          - Sid: S3Put
+            Effect: Allow
+            Action:
+            - s3:PutObject
+            - s3:DeleteObject
+            - s3:PutObjectTagging
+            Resource: !Sub
+            - "arn:${AWS::Partition}:s3:::${DestBucket}/*"
+            - DestBucket: !If [CreateDestBucket, !Ref LambdaZipsBucket, !Ref LambdaZipBucket]
+      ManagedPolicyArns:
+      - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonEC2FullAccess'
+      - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess'
+
+  CopyZips:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt CopyZipsFunctions.Arn
+      DestRegion: !Ref "AWS::Region"
+      DestBucket: !If [CreateDestBucket, !Ref LambdaZipsBucket, !Ref LambdaZipBucket]
+      SourceBucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      Prefix: !Ref QSS3KeyPrefix
+      Objects: "functions/packages/s3_lambda_appflow_trigger_lambda_funtion/S3-Lambda-AppFlow-Creation.zip"
+
+  CopyZipsFunctions:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Copies objects from a source S3 bucket to a destination
+      Handler: index.handler
+      Runtime: python3.7
+      Role: !GetAtt CopyRole.Arn
+      Timeout: 240
+      Environment:
+        Variables:
+          instance_id: !Ref InstanceID
+          repo_name: !Ref ECRRepoName
+          region: !Ref "AWS::Region"
+      Code:
+        ZipFile: |
+          import os
+          import json
+          import logging
+          import threading
+          import boto3
+          import cfnresponse
+          def copy_objects(source_bucket, dest_bucket, prefix, objects):
+              s3 = boto3.client('s3')
+              s3.copy_object(CopySource=source_bucket + '/' + prefix + objects, Bucket=dest_bucket, Key=objects.split('/')[3])
+          def delete_objects(bucket, prefix, objects):
+              s3 = boto3.client('s3')
+              objects = {'Objects': [{'Key': objects.split('/')[3]}]}
+              s3.delete_objects(Bucket=bucket, Delete=objects)
+          def delete_ec2():
+              ec2_resource = boto3.resource('ec2',region_name=os.environ['region'])
+              ec2_resource.instances.filter(InstanceIds = [os.environ['instance_id']]).terminate()
+          def delete_ecr_repo():
+              ecr_client = boto3.client('ecr', region_name=os.environ['region'])
+              response = ecr_client.delete_repository(repositoryName=os.environ['repo_name'],force=True)
+          def timeout(event, context):
+              logging.error('Execution is about to time out, sending failure response to CloudFormation')
+              cfnresponse.send(event, context, cfnresponse.FAILED, {}, None)
+          def handler(event, context):
+              # make sure we send a failure to CloudFormation if the function is going to timeout
+              timer = threading.Timer((context.get_remaining_time_in_millis() / 1000.00) - 0.5, timeout, args=[event, context])
+              timer.start()
+              print('Received event: %s' % json.dumps(event))
+              status = cfnresponse.SUCCESS
+              try:
+                  source_bucket = event['ResourceProperties']['SourceBucket']
+                  dest_bucket = event['ResourceProperties']['DestBucket']
+                  prefix = event['ResourceProperties']['Prefix']
+                  objects = event['ResourceProperties']['Objects']
+                  if event['RequestType'] == 'Delete':
+                      delete_objects(dest_bucket, prefix, objects)
+                      delete_ecr_repo()
+                  else:
+                      copy_objects(source_bucket, dest_bucket, prefix, objects)
+                      delete_ec2()
+              except Exception as e:
+                  logging.error('Exception: %s' % e, exc_info=True)
+                  status = cfnresponse.FAILED
+              finally:
+                  timer.cancel()
+                  cfnresponse.send(event, context, status, {}, None)
+    DependsOn: LambdaZipsBucket

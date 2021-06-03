@@ -1,0 +1,232 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Working with custom resources for Lambda and AppFlow. (qs-1qpmn11zz)
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Network configuration
+        Parameters:
+          - PrivateSubnet1ID
+          - PrivateSubnet2ID
+          - LambdaSecurityGroupID
+      - Label:
+          default: Database configuration
+        Parameters:
+          - DBName
+          - DBUser
+          - DBPassword
+          - RDSEndpoint
+      - Label:
+          default: App flow configuration
+        Parameters:  
+          - Objects
+          - Connection
+      - Label:
+          default: S3 bucket configuration
+        Parameters:
+          - S3BucketName
+          - LambdaZipBucket
+      - Label:
+          default: ECR configuration
+        Parameters:
+          - RepoURI
+    ParameterLabels:
+      PrivateSubnet1ID:
+        default: Private subnet 1 ID
+      PrivateSubnet2ID:
+        default: Private subnet 2 ID
+      LambdaSecurityGroupID:
+        default: Lambda security group ID
+      DBName:
+        default: Database name
+      DBUser:
+        default: Database primary username
+      DBPassword:
+        default: Database primary password
+      RDSEndpoint: 
+        default: Database connection string
+      RepoURI:
+        default: Elastic container registry image URI
+      S3BucketName:
+        default: Salesforce objects S3 bucket name
+      LambdaZipBucket:
+        default: Lambda zip files S3 bucket name
+      Connection:
+        default: Salesforce connector name
+      Objects:
+        default: Salesforce objects name
+Parameters:
+  S3BucketName:
+    ConstraintDescription: Bucket name must be unique and must not contain spaces or uppercase letters.
+    Type: String
+    Description: The name of the S3 bucket that stores your salesforce objects data.
+  DBName:
+    Description: Name of the Amazon Postgres database.
+    Type: String
+    MinLength: '1'
+    MaxLength: '64'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+  DBPassword:
+    NoEcho: 'true'
+    Description: The database admin account password.
+    Type: String
+    MinLength: '1'
+    MaxLength: '41'
+    AllowedPattern: ^(?=^.{8,255}$)(?=.*[a-z])(?=.*[A-Z])(?=.*\d)((?=.*[^A-Za-z0-9])(?!.*[@/"'])).*$
+    ConstraintDescription:  Min 8 chars. Must include 1 uppercase, 1 lowercase, 1 number, 1 (non / @ " ') symbol.
+  DBUser:
+    Description: The database admin account username.
+    Type: String
+    MinLength: '1'
+    MaxLength: '16'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+  RDSEndpoint:
+    Description: Database connection string.
+    Type: String  
+  LambdaSecurityGroupID: 
+    Description: ID of the security group (e.g., sg-0234se).
+    Type: AWS::EC2::SecurityGroup::Id
+  Connection:
+    Description: The name of the salesforce connector.
+    Type: String
+  Objects:
+    Description: The name of the salesforce objects.
+    Type: String  
+  PrivateSubnet1ID:
+    Description: The ID of the private subnet in Availability Zone 1.
+    Type: AWS::EC2::Subnet::Id
+  PrivateSubnet2ID:
+    Description: The ID of the private subnet in Availability Zone 2.
+    Type: AWS::EC2::Subnet::Id
+  LambdaZipBucket:
+    Description: The name of the S3 bucket that stores your lambda zip files.
+    Type: String  
+  RepoURI: 
+    Description: ECR image URI value.
+    Type: String
+
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref S3BucketName 
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+    DeletionPolicy: Retain 
+    UpdateReplacePolicy : Retain
+  S3bucketpolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: appflow.amazonaws.com
+            Action:
+              - s3:PutObject
+              - s3:AbortMultipartUpload
+              - s3:ListMultipartUploadParts
+              - s3:ListBucketMultipartUploads
+              - s3:GetBucketAcl
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:PutObjectAcl
+            Resource:
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref 'S3Bucket'
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref 'S3Bucket'
+                  - /*
+  S3CustomResource:
+    Type: Custom::S3CustomResource
+    Properties:
+      ServiceToken: !GetAtt AWSLambdaFunction.Arn
+      the_bucket: !Ref S3Bucket    
+  AWSLambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Description: "Work with S3-Lambda-Appflow Creation!"
+      FunctionName: !Select [2, !Split ["/", !Ref AWS::StackId]]
+      Handler: index.handler
+      Role: !GetAtt AWSLambdaExecutionRole.Arn
+      Timeout: 900
+      Runtime: python3.6
+      Environment:
+        Variables:
+          region: !Ref 'AWS::Region'
+          db_host: !Ref RDSEndpoint
+          db_name: !Ref DBName
+          db_password: !Ref DBPassword
+          db_port: 5432
+          db_user: !Ref DBUser
+          subnet_ids: !Join [",", [ !Ref PrivateSubnet1ID, !Ref PrivateSubnet2ID]]
+          securitygroup_ids: !Ref LambdaSecurityGroupID
+          lambda_role: !GetAtt AWSLambdaExecutionRole.Arn
+          connection: !Ref Connection
+          objects: !Ref Objects
+          image_uri: !Ref RepoURI
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroupID
+        SubnetIds:
+        - !Ref PrivateSubnet1ID
+        - !Ref PrivateSubnet2ID
+      Code:
+        S3Bucket: !Ref LambdaZipBucket
+        S3Key: S3-Lambda-AppFlow-Creation.zip
+  AWSLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: AWS-Lambda-S3
+          PolicyDocument:
+            Statement:
+              - Action:
+                  - s3:GetBucketNotification
+                  - s3:PutBucketNotification
+                  - s3:DeleteObject
+                  - s3:GetObject
+                  - s3:DeleteObjectVersion
+                  - s3:GetObjectVersion
+                  - s3:PutBucketPolicy
+                  - lambda:GetBucketNotification
+                  - lambda:InvokeFunction
+                  - lambda:GetEventSourceMapping
+                Effect: Allow
+                Resource:
+                  - !Sub arn:${AWS::Partition}:s3:::${S3Bucket}/*
+                  - !Sub arn:${AWS::Partition}:s3:::${S3Bucket}
+      ManagedPolicyArns:
+      - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonEC2FullAccess'
+      - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonAppFlowFullAccess'
+      - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AWSLambda_FullAccess'
+      - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonS3FullAccess'
+      - !Sub 'arn:${AWS::Partition}:iam::aws:policy/CloudWatchLogsFullAccess'
+      - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonVPCFullAccess'
+      - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonRDSFullAccess' 
+Outputs: 
+  CustomResourceRole:
+    Description: Custom resource lambda (IAM role) ARN.
+    Value: !GetAtt AWSLambdaExecutionRole.Arn

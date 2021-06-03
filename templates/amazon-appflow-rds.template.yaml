@@ -1,0 +1,157 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Postgres_DB Template. (qs-1qpmn11zz)
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Database configuration
+        Parameters:
+          - DBInstanceName
+          - DBName
+          - DBUser
+          - DBPassword
+          - DBAllocatedStorage
+          - DBInstanceClass
+          - DBStorageType
+          - DBBackupRetentionPeriod
+          - DBMultiAZ
+          - DBAutoMinorVersionUpgrade
+      - Label:
+          default: Network configuration
+        Parameters:
+          - PrivateSubnet1ID
+          - PrivateSubnet2ID
+          - RDSSecurityGroupID
+    ParameterLabels:
+      DBInstanceName:
+        default: Database instance name
+      DBName: 
+        default: Database name
+      DBUser:
+        default: Database primary username
+      DBPassword:
+        default: Database primary password
+      DBAllocatedStorage:
+        default: Database allocated storage
+      DBInstanceClass:
+        default: Database instance class
+      DBStorageType:
+        default: Database storage type
+      DBBackupRetentionPeriod:
+        default: Database backup retention period
+      DBMultiAZ:
+        default: Multi-AZ deployment
+      DBAutoMinorVersionUpgrade:
+        default: Database auto minor version upgrade
+      PrivateSubnet1ID:
+        default: Private subnet 1 ID
+      PrivateSubnet2ID:
+        default: Private subnet 2 ID
+      RDSSecurityGroupID:
+        default: RDS security group ID
+Parameters:
+  DBName:
+    Description: Name of the Amazon Postgres database.
+    Type: String
+    MinLength: '1'
+    MaxLength: '64'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+  DBUser:
+    Description: The database admin account username.
+    Type: String
+    MinLength: '1'
+    MaxLength: '16'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+  DBPassword:
+    NoEcho: 'true'
+    Description: The database admin account password.
+    Type: String
+    MinLength: '1'
+    MaxLength: '41'
+    AllowedPattern: ^(?=^.{8,255}$)(?=.*[a-z])(?=.*[A-Z])(?=.*\d)((?=.*[^A-Za-z0-9])(?!.*[@/"'])).*$
+    ConstraintDescription: must contain only alphanumeric characters.
+  DBAllocatedStorage:
+    Description: The size of the database (GB).
+    Type: Number
+    MinValue: '5'
+    MaxValue: '1024'
+    ConstraintDescription: must be between 5 and 1024Gb.
+  DBInstanceClass:
+    Description: The name of the compute and memory capacity class of the database instance.
+    Type: String
+    ConstraintDescription: must select a valid database instance type.
+  DBInstanceName:
+    Description: Name of the database instance.
+    Type: String
+    MinLength: '1'
+    MaxLength: '16'
+  DBStorageType:
+    Default: gp2
+    AllowedValues:
+      - gp2
+      - io1
+    ConstraintDescription: Must be 'General Purpose (SSD)' or 'Provisioned IOPS'.
+    Description: The database storage type.
+    Type: String  
+  DBBackupRetentionPeriod:
+    Default: '7'
+    Description: The number of days for which automatic database snapshots are retained.
+    Type: String
+  PrivateSubnet1ID:
+    Description: The ID of the private subnet in Availability Zone 1.
+    Type: AWS::EC2::Subnet::Id
+  PrivateSubnet2ID:
+    Description: The ID of the private subnet in Availability Zone 2.
+    Type: AWS::EC2::Subnet::Id
+  RDSSecurityGroupID: 
+    Description: ID of the security group (e.g., sg-0234se).
+    Type: AWS::EC2::SecurityGroup::Id
+  DBMultiAZ:
+    Description: Whether to provision a multi-AZ RDS instance.
+    AllowedValues:
+      - true
+      - false
+    ConstraintDescription: Must be 'true' or 'false'.
+    Type: String
+  DBAutoMinorVersionUpgrade:
+    AllowedValues:
+      - true
+      - false
+    Description: Select true/false to setup auto minor version upgrade. e.g. 9.6.8 -> 9.6.11.
+    Type: String
+
+Resources:
+  MainDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: !Ref DBName
+      AllocatedStorage: !Ref DBAllocatedStorage
+      DBInstanceClass: !Ref DBInstanceClass
+      Engine: postgres
+      EngineVersion: "12.5"
+      MasterUsername: !Ref DBUser
+      MasterUserPassword: !Ref DBPassword
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      DBInstanceIdentifier: !Ref DBInstanceName
+      MultiAZ: !Ref DBMultiAZ
+      StorageType: !Ref DBStorageType
+      DeletionProtection: false
+      AutoMinorVersionUpgrade: !Ref DBAutoMinorVersionUpgrade
+      BackupRetentionPeriod: !Ref DBBackupRetentionPeriod
+      VPCSecurityGroups: 
+        - !Ref RDSSecurityGroupID
+  DBSubnetGroup: 
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupDescription: subnet-ids-rds
+      DBSubnetGroupName: RDS-Subnets
+      SubnetIds:
+        - !Ref PrivateSubnet1ID
+        - !Ref PrivateSubnet2ID
+
+Outputs:
+  RDSEndpoint:
+    Description: Database connection string.
+    Value: !GetAtt MainDB.Endpoint.Address
