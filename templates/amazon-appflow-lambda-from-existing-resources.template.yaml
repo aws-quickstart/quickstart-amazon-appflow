@@ -1,0 +1,155 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Working with custom resources from Lambda and Appflow. (qs-1qpmn11zz)
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Network configuration
+        Parameters:
+          - PrivateSubnet1ID
+          - PrivateSubnet2ID
+          - LambdaSecurityGroupID
+      - Label:
+          default: Database configuration
+        Parameters:
+          - DBName
+          - DBUser
+          - DBPassword
+          - RDSEndpoint
+      - Label:
+          default: IAM role configuration
+        Parameters:
+          - CustomResourceRoleARN
+      - Label:
+          default: App flow configuration
+        Parameters:
+          - Connection
+          - Objects
+      - Label:
+          default: S3 bucket configuration
+        Parameters:
+          - S3BucketName
+          - LambdaZipBucket 
+      - Label:
+          default: ECR configuration
+        Parameters:
+          - ImageURI
+    ParameterLabels:
+      PrivateSubnet1ID:
+        default: Private subnet 1 ID
+      PrivateSubnet2ID:
+        default: Private subnet 2 ID
+      LambdaSecurityGroupID:
+        default: Lambda security group ID
+      DBName:
+        default: Database name
+      DBUser:
+        default: Database primary username
+      DBPassword:
+        default: Database primary password
+      RDSEndpoint:
+        default: Database connection string
+      CustomResourceRoleARN:
+        default: Custom resource (IAM role) ARN
+      ImageURI:
+        default: Elastic container registry image URI
+      S3BucketName:
+        default: Salesforce objects S3 bucket name
+      LambdaZipBucket:
+        default: Lambda zip files S3 bucket name
+      Connection:
+        default: Salesforce connector name
+      Objects:
+        default: Salesforce objects name
+Parameters:
+  S3BucketName:
+    Type: String
+    Description: Name of an existing S3 bucket that stores your salesforce objects data.
+  LambdaZipBucket:
+    Type: String
+    Description: Name of an existing S3 bucket that stores your lambda zip files.
+  CustomResourceRoleARN:
+    Description: Existing IAM role Amazon resource name (ARN) to be granted access to the custom resources.
+    Type: String
+  DBName:
+    Type: String
+    MinLength: '1'
+    MaxLength: '64'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+    Description: Name of an existing database admin account username.
+  DBPassword:
+    NoEcho: 'true'
+    Description: Enter existing database admin account password.
+    Type: String
+    MinLength: '1'
+    MaxLength: '41'
+    AllowedPattern: ^(?=^.{8,255}$)(?=.*[a-z])(?=.*[A-Z])(?=.*\d)((?=.*[^A-Za-z0-9])(?!.*[@/"'])).*$
+    ConstraintDescription:  Min 8 chars. Must include 1 uppercase, 1 lowercase, 1 number, 1 (non / @ " ') symbol
+  DBUser:
+    Description: Name of an existing database user.
+    Type: String
+    MinLength: '1'
+    MaxLength: '16'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters
+  RDSEndpoint:
+    Description: Name of an existing database connection string.
+    Type: String
+  LambdaSecurityGroupID: 
+    Description: ID of your existing lambda security group.
+    Type: AWS::EC2::SecurityGroup::Id
+  Connection:
+    Description: The name of the salesforce connector.
+    Type: String
+  Objects:
+    Description: The name of the salesforce objects.
+    Type: String
+  PrivateSubnet1ID:
+    Description: ID of the private subnet in Availability Zone 1 of your existing VPC (e.g., subnet-fe9a8b32).
+    Type: AWS::EC2::Subnet::Id
+  PrivateSubnet2ID:
+    Description: ID of the private subnet in Availability Zone 2 of your existing VPC (e.g., subnet-fe9a8b32).
+    Type: AWS::EC2::Subnet::Id
+  ImageURI:
+    Type: String
+    Description: Existing image URI.
+     
+Resources:
+  S3CustomResource:
+    Type: Custom::S3CustomResource
+    Properties:
+      ServiceToken: !GetAtt AWSLambdaFunction.Arn
+      the_bucket: !Ref S3BucketName
+  AWSLambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Description: "Work with S3-Lambda-Appflow Creation!"
+      FunctionName: !Select [2, !Split ["/", !Ref AWS::StackId]]
+      Handler: index.handler
+      Role: !Ref CustomResourceRoleARN
+      Timeout: 900
+      Runtime: python3.6
+      Environment:
+        Variables:
+          region: !Ref 'AWS::Region'
+          db_host: !Ref RDSEndpoint
+          db_name: !Ref DBName
+          db_password: !Ref DBPassword
+          db_port: 5432
+          db_user: !Ref DBUser
+          subnet_ids: !Join [",", [ !Ref PrivateSubnet1ID, !Ref PrivateSubnet2ID]]
+          securitygroup_ids: !Ref LambdaSecurityGroupID
+          lambda_role: !Ref CustomResourceRoleARN
+          connection: !Ref Connection
+          objects: !Ref Objects
+          image_uri: !Ref ImageURI
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroupID
+        SubnetIds:
+        - !Ref PrivateSubnet1ID
+        - !Ref PrivateSubnet2ID
+      Code:
+        S3Bucket: !Ref LambdaZipBucket
+        S3Key: S3-Lambda-AppFlow-Creation.zip

@@ -1,0 +1,253 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Creation of ECR-EC2 infrastructure. (qs-1qpmn11zz)
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: ECR configuration
+        Parameters:
+          - ECRRepoName
+      - Label:
+          default: Network configuration
+        Parameters:
+          - PublicSubnet1ID
+          - InstanceSecurityGroupID
+      - Label:
+          default: AWS Quick Start configuration
+        Parameters:
+          - GitHubUrl
+          - GitHubBranch
+    ParameterLabels:
+      GitHubUrl:
+        default: Quick Start Git hub URL
+      GitHubBranch:
+        default: Git hub branch name  
+      ECRRepoName:
+        default: Elastic container registry name
+      PublicSubnet1ID:
+        default:  Public subnet 1 ID
+      InstanceSecurityGroupID:
+        default: Instance security group ID
+        
+Parameters:
+  ECRRepoName:
+    Description: Name of the elastic container registry.
+    Type: String
+    ConstraintDescription: must begin with a letter and can only contain lowercase letters, numbers and forward slashes.
+  GitHubUrl:
+    Type: String
+    Description: The GitHub URL where the Quick Start assets stored.
+  PublicSubnet1ID:
+    Description: The ID of the public subnet in Availability Zone 1.
+    Type: AWS::EC2::Subnet::Id
+  InstanceSecurityGroupID:
+    Description: ID of the security group (e.g., sg-0234se).
+    Type: AWS::EC2::SecurityGroup::Id
+  GitHubBranch:
+    Description: Name of the GitHub branch that the code will pull from.
+    Type: String 
+Mappings:
+  RegionMap:
+    us-east-1: 
+      HVM64: "ami-0d5eff06f840b45e9"
+    us-east-2:
+      HVM64: "ami-077e31c4939f6a2f3"
+    us-west-1:
+      HVM64: "ami-04468e03c37242e1e"
+    us-west-2:
+      HVM64: "ami-0cf6f5c8a62fa5da6"
+    af-south-1:
+      HVM64: "ami-0936d2754993c364e"
+    ap-east-1:
+      HVM64: "ami-0aca22cb23f122f27"
+    ap-south-1:
+      HVM64: "ami-010aff33ed5991201"
+    ap-northeast-3:
+      HVM64: "ami-056314235f4f5d523"
+    ap-northeast-2:
+      HVM64: "ami-0f2c95e9fe3f8f80e"
+    ap-southeast-1:
+      HVM64: "ami-02f26adf094f51167"
+    ap-southeast-2:
+      HVM64: "ami-0186908e2fdeea8f3"
+    ap-northeast-1:
+      HVM64: "ami-0ca38c7440de1749a"
+    ca-central-1:
+      HVM64: "ami-0101734ab73bd9e15"
+    eu-central-1:
+      HVM64: "ami-043097594a7df80ec"
+    eu-west-1:
+      HVM64: "ami-063d4ab14480ac177"
+    eu-west-2:
+      HVM64: "ami-06dc09bb8854cbde3"
+    eu-south-1:
+      HVM64: "ami-0f447354763f0eaac"
+    eu-west-3:
+      HVM64: "ami-0b3e57ee3b63dd76b"
+    eu-north-1:
+      HVM64: "ami-050fdc53cf6ba8f7f"
+    me-south-1:
+      HVM64: "ami-0880769bc15eeec4f"
+    sa-east-1:
+      HVM64: "ami-05373777d08895384"
+
+Resources:
+  DockerCreateRole:
+    Type : AWS::IAM::Role
+    Properties:
+      Path: /
+      ManagedPolicyArns:
+      - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonS3FullAccess'
+      - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonEC2FullAccess'
+      - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess'
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: "Allow"
+          Principal:
+            Service:
+            - "ec2.amazonaws.com"
+            - "ssm.amazonaws.com"
+          Action: "sts:AssumeRole"
+  IamInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+      - !Ref DockerCreateRole
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Metadata:
+      Comment: Provisioning an EC2 instance for ECR docker image pull/push operation via git.
+      AWS::CloudFormation::Init:
+        config:
+          packages:
+            yum:
+              httpd: []
+              docker: []
+              git: []
+              postgresql: []
+          groups:
+            docker: {}
+          users:
+            "ec2-user":
+              groups:
+                - "docker"
+          files:
+            "/home/ec2-user/ecr_docker_push.sh":
+              content: !Sub |
+                #!/bin/bash
+
+                GitHubUrl=$1
+                GitHubBranch=$2
+                RepoURI=$3
+
+                yum update -y
+                yum install -y docker
+                yum install -y git
+                sudo service docker start
+                usermod -a -G docker ec2-user
+
+                git clone $GitHubUrl
+                cd quickstart-amazon-appflow
+                git checkout $GitHubBranch
+                cd functions/source/insert_records_lambda_function
+
+                #Building docker image
+                docker build -t lambda-appflow .
+                docker tag lambda-appflow $RepoURI
+
+                aws ecr get-login-password --region ${AWS::Region} | docker login --username AWS --password-stdin $RepoURI
+                docker push $RepoURI
+
+              mode: '000744'
+              owner: ec2-user
+              group: ec2-user
+            "/tmp/cwlogs/apacheaccess.conf":
+              content: !Sub |
+                [general]
+                state_file= /var/awslogs/agent-state
+                [/var/log/httpd/access_log]
+                file = /var/log/httpd/access_log
+                log_group_name = ${AWS::StackName}
+                log_stream_name = {instance_id}/apache.log
+                datetime_format = %d/%b/%Y:%H:%M:%S
+              mode: '000400'
+              owner: apache
+              group: apache
+            "/etc/cfn/cfn-hup.conf":
+              content: !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+              mode: "000400"
+              owner: "root"
+              group: "root"
+            "/etc/cfn/hooks.d/cfn-auto-reloader.conf":
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.EC2Instance.Metadata.AWS::CloudFormation::Init
+                action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource EC2Instance --region ${AWS::Region}
+              mode: "000400"
+              owner: "root"
+              group: "root"
+          commands:
+            ExecuteShellScript:
+              command: "./ecr_docker_push.sh $GitHubUrl $GitHubBranch $RepoURI > output.txt"
+              env:
+                GitHubUrl: !Ref GitHubUrl
+                GitHubBranch: !Ref GitHubBranch
+                RepoURI: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRRepoName}"
+              cwd: "/home/ec2-user"
+          services:
+            sysvinit:
+              docker:
+                enabled: 'true'
+                ensureRunning: 'true'
+              sendmail:
+                enabled: 'false'
+                ensureRunning: 'false'
+    Properties:
+      ImageId: !FindInMap
+        - RegionMap
+        - !Ref 'AWS::Region'
+        - HVM64
+      InstanceType: t2.micro
+      IamInstanceProfile: !Ref IamInstanceProfile
+      SubnetId: !Ref PublicSubnet1ID
+      SecurityGroupIds: 
+        - !Ref InstanceSecurityGroupID
+      Tags:
+      - Key: "Name"
+        Value: "ECRContainer"
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            yum update -y aws-cfn-bootstrap
+            /opt/aws/bin/cfn-init -s ${AWS::StackId} -r EC2Instance --region ${AWS::Region} || error_exit 'Failed to run cfn-init'
+            /opt/aws/bin/cfn-hup || error_exit 'Failed to start cfn-hup'
+            /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackId} --resource EC2Instance --region ${AWS::Region}
+  MyRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Ref ECRRepoName
+      RepositoryPolicyText:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: LambdaECRImageRetrievalPolicy
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action:
+              - ecr:BatchGetImage
+              - ecr:GetDownloadUrlForLayer
+              - ecr:SetRepositoryPolicy
+
+Outputs:
+  RepoURI:
+    Description: ECR image URI value.
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRRepoName}:latest"
+  InstanceID:
+    Description: EC2 instance ID.
+    Value: !Ref EC2Instance
