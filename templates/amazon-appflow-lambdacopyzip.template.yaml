@@ -52,13 +52,12 @@ Parameters:
     Description: Name of the elastic container registry.
     Type: String
 Conditions:
-  CreateDestBucket: !Equals [!Ref LambdaZipBucket, ""]
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, ""]
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, "aws-quickstart"]
 Resources:
   LambdaZipsBucket:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: !Ref LambdaZipBucket 
+      BucketName: !Ref LambdaZipBucket
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -96,7 +95,7 @@ Resources:
             - s3:PutObjectTagging
             Resource: !Sub
             - "arn:${AWS::Partition}:s3:::${DestBucket}/*"
-            - DestBucket: !If [CreateDestBucket, !Ref LambdaZipsBucket, !Ref LambdaZipBucket]
+            - DestBucket: !Ref LambdaZipsBucket
       ManagedPolicyArns:
       - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
       - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonEC2FullAccess'
@@ -107,7 +106,7 @@ Resources:
     Properties:
       ServiceToken: !GetAtt CopyZipsFunctions.Arn
       DestRegion: !Ref "AWS::Region"
-      DestBucket: !If [CreateDestBucket, !Ref LambdaZipsBucket, !Ref LambdaZipBucket]
+      DestBucket: !Ref LambdaZipsBucket
       SourceBucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Prefix: !Ref QSS3KeyPrefix
       Objects: "functions/packages/s3_lambda_appflow_trigger_lambda_funtion/S3-Lambda-AppFlow-Creation.zip"

@@ -106,12 +106,11 @@ Parameters:
   RepoURI: 
     Description: ECR image URI value.
     Type: String
-
 Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Ref S3BucketName 
+      BucketName: !Ref S3BucketName
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true

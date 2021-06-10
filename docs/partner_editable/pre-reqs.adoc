@@ -3,9 +3,10 @@
 ==== Create AppFlow connection with Salesforce
 
 . Create a new connection in AWS AppFlow
-. Go to Connections in AppFlow
-. From connectors choose Salesforce
-. Then click on Create Connection
+.. Make sure you are in the same Region in which you will be deploying the Quick Start
+.. Go to Connections in AppFlow
+.. From connectors, select *Salesforce*
+.. Click on Create Connection
 
 [#prereq1]
 .Amazon AppFlow connections

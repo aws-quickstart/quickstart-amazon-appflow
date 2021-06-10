@@ -45,7 +45,7 @@ Parameters:
     Type: AWS::EC2::SecurityGroup::Id
   GitHubBranch:
     Description: Name of the GitHub branch that the code will pull from.
-    Type: String 
+    Type: String
 Mappings:
   RegionMap:
     us-east-1: 
@@ -147,7 +147,7 @@ Resources:
                 sudo service docker start
                 usermod -a -G docker ec2-user
 
-                git clone $GitHubUrl
+                git clone $GitHubUrl quickstart-amazon-appflow
                 cd quickstart-amazon-appflow
                 git checkout $GitHubBranch
                 cd functions/source/insert_records_lambda_function
