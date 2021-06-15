@@ -4,4 +4,23 @@ project:
   package_lambda: false
   regions:
   - us-east-1
-
+tests:
+  appfkiw:
+    parameters:
+      VPCName: 'appflowvpc'
+      RemoteAccessCIDR: '0.0.0.0/0'
+      DBInstanceName: 'appflow'
+      DBPassword: $[taskcat_genpass_16]
+      ECRRepoName: 'appflow'
+      S3BucketName: $[taskcat_random-string]
+      LambdaZipBucket: $[taskcat_random-string]
+      Connection: 'salesforce'
+      Objects: 'Account'
+      QSS3BucketName: $[taskcat_autobucket]
+      QSS3BucketRegion: $[taskcat_current_region]
+      GitHubUrl: 'https://github.com/aws-quickstart/quickstart-amazon-appflow.git'
+      GitHubBranch: 'develop'
+    regions:
+    - us-east-1
+    s3_bucket: ''
+    template: templates/amazon-appflow-main.template.yaml
