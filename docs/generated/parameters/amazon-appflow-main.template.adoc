@@ -1,0 +1,58 @@
+
+.Network configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|VPC name
+(`VPCName`)|`**__Requires input__**`|VPC name.|VPC CIDR
+(`VPCCIDR`)|`10.192.0.0/16`|CIDR block for the VPC.|Public subnet 1 CIDR
+(`PublicSubnet1CIDR`)|`10.192.10.0/24`|CIDR block for public subnet 1, located in Availability Zone 1.|Public subnet 2 CIDR
+(`PublicSubnet2CIDR`)|`10.192.11.0/24`|CIDR block for public subnet 2, located in Availability Zone 2.|Private subnet 1 CIDR
+(`PrivateSubnet1CIDR`)|`10.192.20.0/24`|CIDR block for private subnet 1, located in Availability Zone 1.|Private subnet 2 CIDR
+(`PrivateSubnet2CIDR`)|`10.192.21.0/24`|CIDR block for private subnet 2, located in Availability Zone 2.|Permitted IP range
+(`RemoteAccessCIDR`)|`**__Requires input__**`|CIDR IP range that is permitted to access the instances.
+|===
+.Database configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Database instance name
+(`DBInstanceName`)|`**__Requires input__**`|Name of the database instance.|Database name
+(`DBName`)|`MyDatabase`|Name of the Amazon Postgres database.|Database primary username
+(`DBUser`)|`postgres`|The database admin account username.|Database primary password
+(`DBPassword`)|`**__Requires input__**`|The database admin account password.|Database allocated storage
+(`DBAllocatedStorage`)|`5`|The size of the database (GB).|Database instance class
+(`DBInstanceClass`)|`db.t2.micro`|The name of the compute and memory capacity class of the database instance.|Database storage type
+(`DBStorageType`)|`gp2`|The database storage type.|Database backup retention period
+(`DBBackupRetentionPeriod`)|`7`|The number of days for which automatic database snapshots are retained.|Multi-AZ deployment
+(`DBMultiAZ`)|`True`|Whether to provision a multi-AZ RDS instance.|Database auto minor version upgrade
+(`DBAutoMinorVersionUpgrade`)|`False`|Select true/false to setup auto minor version upgrade. e.g., 9.6.8 -> 9.6.11.
+|===
+.ECR configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Elastic container registry name
+(`ECRRepoName`)|`**__Requires input__**`|Name of the elastic container registry.
+|===
+.S3 bucket configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Salesforce objects S3 bucket name
+(`S3BucketName`)|`**__Requires input__**`|The name of the S3 bucket that stores your salesforce objects data.|Lambda zip files S3 bucket name
+(`LambdaZipBucket`)|`**__Requires input__**`|The name of the S3 bucket that stores your lambda zip files.
+|===
+.App flow configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Salesforce connector name
+(`Connection`)|`**__Requires input__**`|The name of the salesforce connector.|Salesforce objects name
+(`Objects`)|`**__Requires input__**`|The name of the salesforce objects (e.g., Account,Contact,Lead,Opportunity,.).
+|===
+.AWS Quick Start configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Quick Start S3 bucket name
+(`QSS3BucketName`)|`aws-quickstart`|S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).|Quick Start S3 key prefix
+(`QSS3KeyPrefix`)|`quickstart-amazon-appflow/`|S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), periods (.) and forward slash (/).|Quick Start S3 bucket region
+(`QSS3BucketRegion`)|`us-east-1`|The AWS region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.|Quick Start Git hub URL
+(`GitHubUrl`)|`**__Requires input__**`|The GitHub URL for the Quick Start assets.|Git hub branch name
+(`GitHubBranch`)|`**__Requires input__**`|Name of the GitHub branch that the code will pull from.
+|===
