@@ -1,4 +1,11 @@
 // If no preperation is required, remove all content from here
+=== Prepare for the deployment
+
+=== Prerequisites
+
+* To access Salesforce from Amazon AppFlow, your Salesforce edition must provide API access. Salesforce Enterprise, Unlimited, Developer, and Performance editions provide API access. Professional or Essentials editions do not. Before proceeding, check the latest information on which editions provide API access.
+* Naming convention for objects is strict. Please use the exact object name as mentioned https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_list.htm[here]. Also object support might vary across different Salesforce editions.
+
 
 ==== Create AppFlow connection with Salesforce
 
