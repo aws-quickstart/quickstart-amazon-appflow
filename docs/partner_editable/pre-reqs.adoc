@@ -3,46 +3,41 @@
 
 === Prerequisites
 
-* To access Salesforce from Amazon AppFlow, your Salesforce edition must provide API access. Salesforce Enterprise, Unlimited, Developer, and Performance editions provide API access. Professional or Essentials editions do not. Before proceeding, check the latest information on which editions provide API access.
-* Naming convention for objects is strict. Please use the exact object name as mentioned https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_list.htm[here]. Also object support might vary across different Salesforce editions.
+* To access Salesforce from Amazon AppFlow, your Salesforce edition must have API access. Salesforce editions, such as Enterprise, Unlimited, Developer, and Performance provide API access, but Professional and Essentials editions do not. Before proceeding, check the latest information about which editions provide API access.
+* Naming conventions are strict for objects, so use exact object names. For more information, see https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_list.htm[Object Reference for Salesforce and Lightning Platform^]. Note that object support may vary across Salesforce editions.
 
 
-==== Create AppFlow connection with Salesforce
+==== Create AppFlow connection in Salesforce
 
-. Create a new connection in AWS AppFlow
-.. Make sure you are in the same Region in which you will be deploying the Quick Start
-.. Go to Connections in AppFlow
-.. From connectors, select *Salesforce*
-.. Click on Create Connection
-
+. Create a new connection in Amazon AppFlow.
+.. Ensure that you are in the same Region in which you deploy this Quick Start.
+.. Navigate to *Connections* in Amazon AppFlow.
+.. Choose *Salesforce* and then *Create connection*.
++
 [#prereq1]
 .Amazon AppFlow connections
 image::../images/Connector1.png[Connector]
-
-[start=5]
-. Select Sandbox or Production based on the Salesforce instance type and add a new name in connection name. Then click on Continue.
-
++
+. Choose *Sandbox* or *Production*, based on the Salesforce instance type, and add a new connection name. Choose *Continue*.
++
 [#prereq2]
 .Create new connection
 image::../images/Connector2.png[Connector]
-
-[start=6]
-. Add credentials of Salesforce user account and click on Log In
-
++
+. Add Salesforce credentials for the user account, and then choose *Log In*.
++
 [#prereq3]
 .Entering Salesforce credentials
 image::../images/Connector3.png[Connector]
-
-[start=7]
-. Click on *Allow* to allow access
-
++
+. Choose *Allow* to allow access.
++
 [#prereq4]
 .Allowing AppFlow access to Salesforce
 image::../images/Connector4.png[Connector]
-
-[start=8]
-. Verify that the new connection name is listed in connections list. Note that this connection name will be needed when deploying the Quick Start.
-
++
+. Verify that the new connection name is listed in the connections list. Note that the connection name is required for deploying this Quick Start.
++
 [#prereq4]
 .Amazon AppFlow connections
 image::../images/Connector4.png[Connector]

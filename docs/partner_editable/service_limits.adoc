@@ -5,7 +5,7 @@
 // Space needed to maintain table headers
 |VPCs |1
 |Elastic IP addresses |1
-|NAT Gateways |1
+|NAT gateways |1
 |Security groups |3
 |AWS Identity and Access Management (IAM) roles |3
 |Amazon ECR repositories |1
