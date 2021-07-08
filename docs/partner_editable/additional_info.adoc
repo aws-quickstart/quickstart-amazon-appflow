@@ -3,6 +3,6 @@
 
 == Test the deployment
 
-. Log in to your Salesforce account and perform any operation (create, update) on the object which is enabled for synchronization.
-. Please follow this https://aws.amazon.com/premiumsupport/knowledge-center/rds-connect-using-bastion-host-linux/[link] for creating a bastion host for connecting to the PostgreSQL RDS database.
-. Connect to the RDS database using a bastion host and verify that data is written to PostgreSQL.
+. Log in to your Salesforce account, and perform any operation (for example, create or update) on an object that is enabled for synchronization.
+. To create a bastion host for connecting to the Amazon RDS PostgreSQL database, see https://aws.amazon.com/premiumsupport/knowledge-center/rds-connect-using-bastion-host-linux/[How can I connect to my Amazon RDS DB instance using a bastion host from my Linux/macOS machine?^]
+. Connect to Amazon RDS using a bastion host, and verify that data is written to PostgreSQL.
