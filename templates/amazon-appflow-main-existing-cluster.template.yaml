@@ -4,6 +4,10 @@ Metadata:
   QuickStartDocumentation:
     EntrypointName: "Parameters for deploying into an existing VPC"
     Order: "2"
+  cfn-lint:
+    config:
+      ignore_checks:
+        - W9006
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
