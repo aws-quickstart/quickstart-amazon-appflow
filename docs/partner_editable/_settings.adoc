@@ -2,7 +2,7 @@
 :quickstart-project-name: quickstart-amazon-appflow
 :partner-product-name: Amazon AppFlow
 // For the following attribute, if you have no short name, enter the same name as partner-product-name.
-:partner-product-short-name: AppFlow
+:partner-product-short-name: Amazon AppFlow
 // If there's no partner, comment partner-company-name.
 // :partner-company-name: Example Company Name, Ltd.
 :doc-month: July
