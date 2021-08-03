@@ -13,13 +13,11 @@ As shown in <<architecture1>>, the Quick Start sets up the following:
 * A highly available architecture that spans multiple Availability Zones.*
 * A VPC configured with public and private subnets, according to AWS
 best practices, to provide you with your own virtual network on AWS.*
-* In the public subnets:
-** A managed network address translation (NAT) gateway to allow outbound
+* In the public subnets, a managed network address translation (NAT) gateway to allow outbound
 internet access for resources in the private subnets.*
-* In the private subnets:
-** An Amazon RDS PostgreSQL database.
-* An Amazon Elastic Container Registry (Amazon ECR) repository to store a Docker image.
-* An Amazon Simple Storage Service (Amazon S3) bucket to store Salesforce object data.
-* A Lambda function to transfer Salesforce data to Amazon RDS and Amazon S3.
+* In the private subnets, an Amazon RDS PostgreSQL database.
+* Amazon Elastic Container Registry (Amazon ECR) to store Docker images.
+* Amazon Simple Storage Service (Amazon S3) to store Salesforce object data.
+* An Amazon AppFlow flow, created by an AWS Lambda function, to transfer Salesforce data to Amazon RDS and Amazon S3.
 
 [.small]#* The template that deploys the Quick Start into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.#
