@@ -1,9 +1,13 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Creation of scheduled AppFlow with existing resources. (qs-1rudmgma4)
+Description: Creation of scheduled Amazon AppFlow with existing resources. (qs-1rudmgma4)
 Metadata:
   QuickStartDocumentation:
     EntrypointName: "Parameters for deploying into an existing VPC"
     Order: "2"
+  cfn-lint:
+    config:
+      ignore_checks:
+        - W9006
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
@@ -24,7 +28,7 @@ Metadata:
         Parameters:
           - CustomResourceRoleARN
       - Label:
-          default: App flow configuration
+          default: Amazon AppFlow configuration
         Parameters:
           - Connection
           - Objects
@@ -34,7 +38,7 @@ Metadata:
           - S3BucketName
           - LambdaZipBucket
       - Label:
-          default: ECR configuration
+          default: Amazon ECR configuration
         Parameters:
           - ImageURI
       - Label:
@@ -53,7 +57,7 @@ Metadata:
       DBName:
         default: Database name
       DBUser:
-        default: Database primary username
+        default: Database primary user name
       DBPassword:
         default: Database primary password
       RDSEndpoint: 
@@ -61,11 +65,11 @@ Metadata:
       CustomResourceRoleARN:
         default: Custom resource (IAM role) ARN
       ImageURI:
-        default: Elastic container registry image URI
+        default: Amazon Elastic Container Registry image URI
       S3BucketName:
-        default: Salesforce objects S3 bucket name
+        default: S3 bucket name for Salesforce objects
       LambdaZipBucket:
-        default: Lambda zip files S3 bucket name
+        default: S3 bucket name for Lambda zip files
       Connection:
         default: Salesforce connector name
       Objects:
@@ -73,19 +77,19 @@ Metadata:
       QSS3BucketName:
         default: Quick Start S3 bucket name
       QSS3BucketRegion:
-        default: Quick Start S3 bucket region
+        default: Quick Start S3 bucket Region
       QSS3KeyPrefix:
         default: Quick Start S3 key prefix
 
 Parameters:
   S3BucketName:
     Type: String
-    Description: Name of an existing S3 bucket that stores your salesforce objects data.
+    Description: Name of an existing S3 bucket for storing Salesforce objects.
   LambdaZipBucket:
     Type: String
-    Description: Name of an existing S3 bucket that stores your lambda zip files.
+    Description: Name of an existing S3 bucket for storing Lambda zip files.
   CustomResourceRoleARN:
-    Description: Existing IAM role Amazon resource name (ARN) to be granted access to the custom resources.
+    Description: Existing IAM role Amazon Resource Name (ARN) for accessing custom resources.
     Type: String
   ImageURI:
     Type: String
@@ -98,17 +102,17 @@ Parameters:
     Description: ID of the private subnet in Availability Zone 2 of your existing VPC (e.g., subnet-fe9a8b32).
   LambdaSecurityGroupID:
     Type: "AWS::EC2::SecurityGroup::Id"
-    Description: ID of your existing lambda security group.
+    Description: ID of your existing Lambda security group.
   QSS3BucketName:
     AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
     ConstraintDescription: Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
     Default: aws-quickstart
-    Description: S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Description: S3 bucket name for Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
     Type: String  
   QSS3KeyPrefix:
     AllowedPattern: ^[0-9a-zA-Z-/.]*$
-    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), periods (.) and forward slash (/).
-    Description: S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), periods (.) and forward slash (/).
+    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), periods (.) and forward slashes (/).
+    Description: S3 key prefix for Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, hyphens (-), periods (.) and forward slashes (/).
     Type: String
     Default: quickstart-amazon-appflow/
   QSS3BucketRegion:
@@ -120,31 +124,31 @@ Parameters:
     MinLength: '1'
     MaxLength: '64'
     AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
-    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
-    Description: Name of an existing Amazon Postgres database.
+    ConstraintDescription: Must begin with a letter and contain only alphanumeric characters.
+    Description: Name of an existing Amazon PostgreSQL database.
   DBUser:
-    Description: Name of an existing database admin account username.
+    Description: Name of an existing database administrator account name.
     Type: String
     MinLength: '1'
     MaxLength: '16'
     AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
-    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+    ConstraintDescription: Must begin with a letter and contain only alphanumeric characters.
   DBPassword:
     NoEcho: 'true'
-    Description: Enter existing database admin account password.
+    Description: Enter an existing database administrator password.
     Type: String
     MinLength: '1'
     MaxLength: '41'
     AllowedPattern: ^(?=^.{8,255}$)(?=.*[a-z])(?=.*[A-Z])(?=.*\d)((?=.*[^A-Za-z0-9])(?!.*[@/"'])).*$
-    ConstraintDescription:  Min 8 chars. Must include 1 uppercase, 1 lowercase, 1 number, 1 (non / @ " ') symbol
+    ConstraintDescription:  Minimally 8 characters and must include 1 uppercase letter, 1 lowercase letter, 1 number, and 1 symbol (but not / @ " ').
   RDSEndpoint:
     Description: Name of an existing database connection string.
     Type: String
   Connection:
-    Description: The name of the salesforce connector.
+    Description: Name of the Salesforce connector.
     Type: String
   Objects:
-    Description: The name of the salesforce objects (e.g., Account,Contact,Lead,..).
+    Description: Name of the Salesforce objects (e.g., Account, Contact, Lead).
     Type: CommaDelimitedList 
 Conditions:
   UsingDefaultBucket: !Equals [!Ref QSS3BucketName, ""]

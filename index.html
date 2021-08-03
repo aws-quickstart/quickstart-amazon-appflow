@@ -870,9 +870,9 @@ p.footer-text a{color:#d7d8d8}
 </div>
 </div>
 <div class="paragraph text-center">
-<p><strong>June 2021</strong><br>
-<em>Anirudh Sharma, Trantor Inc.</em><br>
-<em>Dave May, AWS Quick Start team</em></p>
+<p><strong>August 2021</strong><br>
+<em>Anirudh Rautela, Avdesh Mankotia, and Karandeep Singh, Trantor Inc.</em><br>
+<em>Dave May, AWS Infrastructure &amp; Automation team</em></p>
 </div>
 <div class="admonitionblock tip text-left">
 <table>
@@ -896,10 +896,10 @@ report bugs, or submit feature ideas for this Quick Start.
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This Quick Start reference deployment guide walks you through the steps for deploying Amazon AppFlow on the AWS Cloud for uni-directional data sync from Salesforce to PostgreSQL RDS. It does not require deep knowledge of AWS or Linux system administration.</p>
+<p>This Quick Start deployment guide walks you through deploying Amazon AppFlow on the Amazon Web Services (AWS) Cloud for unidirectional data synchronization from Salesforce to 	Amazon Relational Database Service (Amazon RDS) PostgreSQL. This deployment requires extensive knowledge of AWS and Linux administration.</p>
 </div>
 <div class="paragraph">
-<p>This Quick Start is for users who are looking for an integration platform as a service (IPaaS) solution hosted on the AWS Cloud. With it, you can deploy Amazon AppFlow using AWS CloudFormation.</p>
+<p>This Quick Start is for users who want an integration platform as a service (iPaaS) hosted on the AWS Cloud. Users can then deploy Amazon AppFlow through AWS CloudFormation.</p>
 </div>
 </div>
 </div>
@@ -907,7 +907,7 @@ report bugs, or submit feature ideas for this Quick Start.
 <h2 id="_amazon_appflow_on_aws">Amazon AppFlow on AWS</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Amazon AppFlow is a fully managed integration service that enables you to securely transfer data between Software-as-a-Service (SaaS) applications like Salesforce, Zendesk, Slack, and ServiceNow, and AWS services like Amazon S3 and Amazon Redshift, in just a few clicks. This Quick Start deploys AppFlow for synchronization between Salesforce and an Amazon RDS PostgreSQL database.</p>
+<p>Amazon AppFlow is a fully managed integration service for transferring data between software as a service (SaaS) applications (for example, Salesforce, Zendesk, Slack, and ServiceNow) and AWS services. This Quick Start deploys Amazon AppFlow for synchronization between Salesforce and an Amazon RDS PostgreSQL database.</p>
 </div>
 </div>
 </div>
@@ -951,14 +951,14 @@ After you deploy the Quick Start, create <a href="https://docs.aws.amazon.com/aw
 <div class="sectionbody">
 <div class="paragraph">
 <p>Deploying this Quick Start for a new virtual private cloud (VPC) with
-default parameters builds the following AppFlow environment in the
+default parameters builds the following Amazon AppFlow environment in the
 AWS Cloud.</p>
 </div>
 <div id="architecture1" class="imageblock">
 <div class="content">
 <img src="images/architecture_diagram.png" alt="Architecture">
 </div>
-<div class="title">Figure 1. Quick Start architecture for AppFlow on AWS</div>
+<div class="title">Figure 1. Quick Start architecture for Amazon AppFlow on AWS</div>
 </div>
 <div class="paragraph">
 <p>As shown in <a href="#architecture1">Figure 1</a>, the Quick Start sets up the following:</p>
@@ -973,39 +973,50 @@ AWS Cloud.</p>
 best practices, to provide you with your own virtual network on AWS.*</p>
 </li>
 <li>
-<p>In the public subnets:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>A managed network address translation (NAT) gateway to allow outbound
+<p>In the public subnets, a managed network address translation (NAT) gateway to allow outbound
 internet access for resources in the private subnets.*</p>
 </li>
-</ul>
-</div>
+<li>
+<p>In the private subnets, an Amazon RDS PostgreSQL database.</p>
 </li>
 <li>
-<p>In the private subnets:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>An Amazon RDS PostgreSQL database.</p>
-</li>
-</ul>
-</div>
+<p>Amazon Elastic Container Registry (Amazon ECR) to store Docker images.</p>
 </li>
 <li>
-<p>An Amazon Elastic Container Registry (ECR) repository to store a Docker image.</p>
+<p>Amazon Simple Storage Service (Amazon S3) to store Salesforce object data.</p>
 </li>
 <li>
-<p>An Amazon Simple Storage Service (S3) bucket to store Salesforce object data.</p>
-</li>
-<li>
-<p>Lambda functions to transfer Salesforce data to RDS and S3.</p>
+<p>An Amazon AppFlow flow, created by an AWS Lambda function, to transfer Salesforce data to Amazon RDS and Amazon S3.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
 <p><span class="small">* The template that deploys the Quick Start into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.</span></p>
+</div>
+<div id="architecture2" class="imageblock">
+<div class="content">
+<img src="images/amazon-appflow-flow-diagram.png" alt="Flow">
+</div>
+<div class="title">Figure 2. Quick Start flow diagram for Amazon AppFlow on AWS</div>
+</div>
+<div class="paragraph">
+<p>As shown in <a href="#architecture2">Figure 2</a>, this Quick Start sets up the following workflow:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Salesforce object data is transferred to Amazon AppFlow.</p>
+</li>
+<li>
+<p>Amazon AppFlow relays Salesforce data to Amazon S3.</p>
+</li>
+<li>
+<p>Amazon S3 relays object data to AWS Lambda, which sits inside a private subnet of your VPC.</p>
+</li>
+<li>
+<p>AWS Lambda transfers your Salesforce data to Amazon RDS.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -1021,7 +1032,7 @@ and <a href="https://aws.amazon.com/training/" target="_blank" rel="noopener">AW
 deploy, and operate your infrastructure and applications on the AWS Cloud.</p>
 </div>
 <div class="paragraph">
-<p>This Quick Start assumes familiarity with Amazon AppFlow, AWS CloudFormation, Amazon S3, AWS RDS, and Salesforce.</p>
+<p>This Quick Start assumes familiarity with Amazon AppFlow, AWS CloudFormation, Amazon S3, Amazon RDS, and Salesforce.</p>
 </div>
 </div>
 <div class="sect2">
@@ -1064,7 +1075,7 @@ deploy, and operate your infrastructure and applications on the AWS Cloud.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NAT Gateways</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NAT gateways</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 </tr>
 <tr>
@@ -1125,7 +1136,7 @@ deploy, and operate your infrastructure and applications on the AWS Cloud.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p><strong>Asia Pacific</strong></p>
+<p><strong>Asia–Pacific</strong></p>
 </div>
 <div class="ulist">
 <ul>
@@ -1203,95 +1214,76 @@ Certain Regions are available on an opt-in basis. For more information, see <a h
 <div class="ulist">
 <ul>
 <li>
-<p>To access Salesforce from Amazon AppFlow, your Salesforce edition must provide API access. Salesforce Enterprise, Unlimited, Developer, and Performance editions provide API access. Professional or Essentials editions do not. Before proceeding, check the latest information on which editions provide API access.</p>
+<p>To access Salesforce from Amazon AppFlow, your Salesforce edition must have API access. Salesforce editions, such as enterprise, unlimited, developer, and performance provide API access, but professional and essentials editions do not. Before proceeding, check the latest information about which editions provide API access.</p>
 </li>
 <li>
-<p>Naming convention for objects is strict. Please use the exact object name as mentioned <a href="https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_list.htm">here</a>. Also object support might vary across different Salesforce editions.</p>
+<p>Naming conventions are strict for objects, so use exact object names. For more information, see <a href="https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_list.htm" target="_blank" rel="noopener">Object Reference for Salesforce and Lightning Platform</a>. Note that object support may vary across Salesforce editions.</p>
 </li>
 </ul>
 </div>
 <div class="sect3">
-<h4 id="_create_appflow_connection_with_salesforce">Create AppFlow connection with Salesforce</h4>
+<h4 id="_create_an_amazon_appflow_connection_in_salesforce">Create an Amazon AppFlow connection in Salesforce</h4>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Create a new connection in AWS AppFlow</p>
+<p>Create a new connection in Amazon AppFlow.</p>
 <div class="olist loweralpha">
 <ol class="loweralpha" type="a">
 <li>
-<p>Make sure you are in the same Region in which you will be deploying the Quick Start</p>
+<p>Ensure that you are in the same Region in which you deploy this Quick Start.</p>
 </li>
 <li>
-<p>Go to Connections in AppFlow</p>
+<p>Navigate to <strong>Connections</strong> in Amazon AppFlow.</p>
 </li>
 <li>
-<p>From connectors, select <strong>Salesforce</strong></p>
-</li>
-<li>
-<p>Click on Create Connection</p>
-</li>
-</ol>
-</div>
-</li>
-</ol>
-</div>
+<p>Choose <strong>Salesforce</strong> and then <strong>Create connection</strong>.</p>
 <div id="prereq1" class="imageblock">
 <div class="content">
 <img src="images/Connector1.png" alt="Connector">
 </div>
-<div class="title">Figure 2. Amazon AppFlow connections</div>
+<div class="title">Figure 3. Amazon AppFlow connections</div>
 </div>
-<div class="olist arabic">
-<ol class="arabic" start="5">
-<li>
-<p>Select Sandbox or Production based on the Salesforce instance type and add a new name in connection name. Then click on Continue.</p>
 </li>
 </ol>
 </div>
+</li>
+<li>
+<p>Choose <strong>Sandbox</strong> or <strong>Production</strong>, based on the Salesforce instance type, and add a new connection name. Then choose <strong>Continue</strong>.</p>
 <div id="prereq2" class="imageblock">
 <div class="content">
 <img src="images/Connector2.png" alt="Connector">
 </div>
-<div class="title">Figure 3. Create new connection</div>
+<div class="title">Figure 4. Create a new connection</div>
 </div>
-<div class="olist arabic">
-<ol class="arabic" start="6">
-<li>
-<p>Add credentials of Salesforce user account and click on Log In</p>
 </li>
-</ol>
-</div>
+<li>
+<p>Add Salesforce credentials for the user account, and then choose <strong>Log In</strong>.</p>
 <div id="prereq3" class="imageblock">
 <div class="content">
 <img src="images/Connector3.png" alt="Connector">
 </div>
-<div class="title">Figure 4. Entering Salesforce credentials</div>
+<div class="title">Figure 5. Entering Salesforce credentials</div>
 </div>
-<div class="olist arabic">
-<ol class="arabic" start="7">
-<li>
-<p>Click on <strong>Allow</strong> to allow access</p>
 </li>
-</ol>
-</div>
+<li>
+<p>Choose <strong>Allow</strong> to allow access to basic information and data.</p>
 <div id="prereq4" class="imageblock">
 <div class="content">
 <img src="images/Connector4.png" alt="Connector">
 </div>
-<div class="title">Figure 5. Allowing AppFlow access to Salesforce</div>
+<div class="title">Figure 6. Allowing Amazon AppFlow access to Salesforce</div>
 </div>
-<div class="olist arabic">
-<ol class="arabic" start="8">
-<li>
-<p>Verify that the new connection name is listed in connections list. Note that this connection name will be needed when deploying the Quick Start.</p>
 </li>
-</ol>
-</div>
+<li>
+<p>Verify that the new connection name is listed in the connections list. Note that the connection name is required for deploying this Quick Start.</p>
 <div id="prereq4" class="imageblock">
 <div class="content">
 <img src="images/Connector4.png" alt="Connector">
 </div>
-<div class="title">Figure 6. Amazon AppFlow connections</div>
+<div class="title">Figure 7. Amazon AppFlow connections</div>
+</div>
+</li>
+</ol>
 </div>
 </div>
 <div class="sect3">
@@ -1302,15 +1294,15 @@ Certain Regions are available on an opt-in basis. For more information, see <a h
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Deploy AppFlow into a new VPC</strong>. This option builds a new AWS environment consisting of the VPC, subnets, NAT gateways, security groups, bastion hosts, and other infrastructure components. It then deploys AppFlow into this new VPC.</p>
+<p><strong>Deploy Amazon AppFlow into a new VPC</strong>. This option builds a new AWS environment consisting of the VPC, subnets, NAT gateways, security groups, bastion hosts, and other infrastructure components. It then deploys Amazon AppFlow into this new VPC.</p>
 </li>
 <li>
-<p><strong>Deploy AppFlow into an existing VPC</strong>. This option provisions AppFlow in your existing AWS infrastructure.</p>
+<p><strong>Deploy Amazon AppFlow into an existing VPC</strong>. This option provisions Amazon AppFlow in your existing AWS infrastructure.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>The Quick Start provides separate templates for these options. It also lets you configure Classless Inter-Domain Routing (CIDR) blocks, instance types, and AppFlow settings, as discussed later in this guide.</p>
+<p>The Quick Start provides separate templates for these options. It also lets you configure Classless Inter-Domain Routing (CIDR) blocks, instance types, and Amazon AppFlow settings, as discussed later in this guide.</p>
 </div>
 </div>
 </div>
@@ -1324,10 +1316,10 @@ Certain Regions are available on an opt-in basis. For more information, see <a h
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Sign in to your AWS account at <a href="https://aws.amazon.com" class="bare">https://aws.amazon.com</a> with an IAM user role that has the necessary permissions. For details, see <a href="#_planning_the_deployment">Planning the deployment</a> earlier in this guide.</p>
+<p>Sign in to your AWS account at <a href="https://aws.amazon.com" target="_blank" rel="noopener">https://aws.amazon.com</a> with an IAM user role that has the necessary permissions. For more information, see <a href="#_planning_the_deployment">Planning the deployment</a>, earlier in this guide.</p>
 </li>
 <li>
-<p>Make sure that your AWS account is configured correctly, as discussed in the <a href="#_technical_requirements">Technical requirements</a> section.</p>
+<p>Ensure that your AWS account is configured correctly, as discussed in the <a href="#_technical_requirements">Technical requirements</a> section.</p>
 </li>
 </ol>
 </div>
@@ -1341,7 +1333,7 @@ Certain Regions are available on an opt-in basis. For more information, see <a h
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-If you’re deploying AppFlow into an existing VPC, make sure that your VPC has two private subnets in different Availability Zones for the workload instances and that the subnets aren’t shared. This Quick Start doesn’t support <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html" target="_blank" rel="noopener">shared subnets</a>. These subnets require <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html" target="_blank" rel="noopener">NAT gateways</a> in their route tables to allow the instances to download packages and software without exposing them to the internet. Also make sure that the domain name option in the DHCP options is configured as explained in <a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html" target="_blank" rel="noopener">DHCP options sets</a>. You provide your VPC settings when you launch the Quick Start.
+If you deploy Amazon AppFlow into an existing VPC, ensure that your VPC has two private subnets in different Availability Zones for the workload instances and that the subnets are not shared. This Quick Start does not support <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html" target="_blank" rel="noopener">shared subnets</a>. The subnets require <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html" target="_blank" rel="noopener">NAT gateways</a> in their route tables to allow the instances to download packages and software without exposing them to the internet. Also ensure that the domain name in the DHCP options is configured, as explained in <a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html" target="_blank" rel="noopener">DHCP options sets for your VPC</a>. Provide your VPC settings when you launch the Quick Start.
 </td>
 </tr>
 </table>
@@ -1352,7 +1344,7 @@ If you’re deploying AppFlow into an existing VPC, make sure that your VPC has 
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Sign in to your AWS account, and choose one of the following options to launch the AWS CloudFormation template. For help with choosing an option, see <a href="#_deployment_options">Deployment options</a> earlier in this guide.</p>
+<p>Sign in to your AWS account, and choose one of the following options to launch the AWS CloudFormation template. For help with choosing an option, see <a href="#_deployment_options">Deployment options</a>, earlier in this guide.</p>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 75%;">
@@ -1360,24 +1352,24 @@ If you’re deploying AppFlow into an existing VPC, make sure that your VPC has 
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_launch_permalink" target="_blank" rel="noopener">Deploy AppFlow into a new VPC on AWS</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_template_permalink" target="_blank" rel="noopener">View template</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://fwd.aws/PpzVP?" target="_blank" rel="noopener">Deploy Amazon AppFlow into a new VPC on AWS</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://fwd.aws/vQw37?" target="_blank" rel="noopener">View template</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_launch_permalink" target="_blank" rel="noopener">Deploy AppFlow into an existing VPC on AWS</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_template_permalink" target="_blank" rel="noopener">View template</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://fwd.aws/ARV3P?" target="_blank" rel="noopener">Deploy Amazon AppFlow into an existing VPC on AWS</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://fwd.aws/q4nMn?" target="_blank" rel="noopener">View template</a></p></td>
 </tr>
 </tbody>
 </table>
 </li>
 <li>
-<p>Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This Region is where you build the network infrastructure. The template is launched in the us-east-1 Region by default. For other choices, see <a href="#_supported_regions">Supported Regions</a> earlier in this guide.</p>
+<p>Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This Region is where you build the network infrastructure. The template is launched in the us-east-1 Region by default. For other choices, see <a href="#_supported_regions">Supported Regions</a>, earlier in this guide.</p>
 </li>
 <li>
 <p>On the <strong>Create stack</strong> page, keep the default setting for the template URL, and then choose <strong>Next</strong>.</p>
 </li>
 <li>
-<p>On the <strong>Specify stack details</strong> page, change the stack name if needed. Review the parameters for the template. Provide values for the parameters that require input. For all other parameters, review the default settings and customize them as necessary. For details on each parameter, see the <a href="#_parameter_reference">Parameter reference</a> section of this guide. When you finish reviewing and customizing the parameters, choose <strong>Next</strong>.</p>
+<p>On the <strong>Specify stack details</strong> page, change the stack name if needed. Review the parameters for the template. Provide values for the parameters that require input. For all other parameters, review the default settings and customize them as necessary. For details about each parameter, see the <a href="#_parameter_reference">Parameter reference</a> section of this guide. When you finish reviewing and customizing the parameters, choose <strong>Next</strong>.</p>
 </li>
 <li>
 <p>On the <strong>Configure stack options</strong> page, you can <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html" target="_blank" rel="noopener">specify tags</a> (key-value pairs) for resources in your stack and <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-add-tags.html" target="_blank" rel="noopener">set advanced options</a>. When you’re finished, choose <strong>Next</strong>.</p>
@@ -1389,7 +1381,7 @@ If you’re deploying AppFlow into an existing VPC, make sure that your VPC has 
 <p>Choose <strong>Create stack</strong> to deploy the stack.</p>
 </li>
 <li>
-<p>Monitor the status of the stack. When the status is <strong>CREATE_COMPLETE</strong>, the AppFlow deployment is ready.</p>
+<p>Monitor the status of the stack. When the status is <strong>CREATE_COMPLETE</strong>, the Amazon AppFlow deployment is ready.</p>
 </li>
 <li>
 <p>To view the created resources, see the values displayed in the <strong>Outputs</strong> tab for the stack.</p>
@@ -1405,13 +1397,13 @@ If you’re deploying AppFlow into an existing VPC, make sure that your VPC has 
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Log in to your Salesforce account and perform any operation (create, update) on the object which is enabled for synchronization.</p>
+<p>Log in to your Salesforce account, and perform any operation (for example, create or update) on an object that is enabled for synchronization.</p>
 </li>
 <li>
-<p>Please follow this <a href="https://aws.amazon.com/premiumsupport/knowledge-center/rds-connect-using-bastion-host-linux/">link</a> for creating a bastion host for connecting to the PostgreSQL RDS database.</p>
+<p>To create a bastion host for connecting to the Amazon RDS PostgreSQL database, see <a href="https://aws.amazon.com/premiumsupport/knowledge-center/rds-connect-using-bastion-host-linux/" target="_blank" rel="noopener">How can I connect to my Amazon RDS DB instance using a bastion host from my Linux/macOS machine?</a></p>
 </li>
 <li>
-<p>Connect to the RDS database using a bastion host and verify that data is written to PostgreSQL.</p>
+<p>Connect to Amazon RDS using a bastion host, and verify that data is written to PostgreSQL.</p>
 </li>
 </ol>
 </div>
@@ -1424,7 +1416,7 @@ If you’re deploying AppFlow into an existing VPC, make sure that your VPC has 
 <p><strong>Q.</strong> I encountered a <strong>CREATE_FAILED</strong> error when I launched the Quick Start.</p>
 </div>
 <div class="paragraph">
-<p><strong>A.</strong> If AWS CloudFormation fails to create the stack, relaunch the template with <strong>Rollback on failure</strong> set to <strong>Disabled</strong>. This setting is under <strong>Advanced</strong> in the AWS CloudFormation console on the <strong>Configure stack options</strong> page. With this setting, the stack’s state is retained, and the instance keeps running so that you can troubleshoot the issue. (For Windows, look at the log files in <code>%ProgramFiles%\Amazon\EC2ConfigService</code> and <code>C:\cfn\log</code>.)</p>
+<p><strong>A.</strong> If AWS CloudFormation fails to create the stack, relaunch the template with <strong>Rollback on failure</strong> set to <strong>Disabled</strong>. This setting is under <strong>Advanced</strong> in the AWS CloudFormation console on the <strong>Configure stack options</strong> page. With this setting, the stack’s state is retained, and the instance remains running so you can troubleshoot the issue. (For Windows, look at the log files in <code>%ProgramFiles%\Amazon\EC2ConfigService</code> and <code>C:\cfn\log</code>.)</p>
 </div>
 <div class="admonitionblock warning">
 <table>
@@ -1433,19 +1425,16 @@ If you’re deploying AppFlow into an existing VPC, make sure that your VPC has 
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-When you set <strong>Rollback on failure</strong> to <strong>Disabled</strong>, you continue to incur AWS charges for this stack. Delete the stack when you finish troubleshooting.
+When you set <strong>Rollback on failure</strong> to <strong>Disabled</strong>, you continue to incur AWS charges for the stack. Ensure that you delete the stack when you finish troubleshooting. For more information, see <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html" target="_blank" rel="noopener">Troubleshooting AWS CloudFormation</a>.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>For more information, see <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html" target="_blank" rel="noopener">Troubleshooting AWS CloudFormation</a>.</p>
-</div>
-<div class="paragraph">
 <p><strong>Q.</strong> I encountered a size-limitation error when I deployed the AWS CloudFormation templates.</p>
 </div>
 <div class="paragraph">
-<p><strong>A.</strong> Launch the Quick Start templates from the links in this guide or from another S3 bucket. If you deploy the templates from a local copy on your computer or from a location other than an S3 bucket, you might encounter template-size limitations. For more information, see <a href="http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html" target="_blank" rel="noopener">AWS CloudFormation quotas</a>.</p>
+<p><strong>A.</strong> Launch the Quick Start templates from the links in this guide or from another S3 bucket. If you deploy the templates from a local copy on your computer, or from a location other than an S3 bucket, you might encounter template-size limitations. For more information, see <a href="http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html" target="_blank" rel="noopener">AWS CloudFormation quotas</a>.</p>
 </div>
 </div>
 </div>
@@ -1550,31 +1539,31 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">Database name
 (<code>DBName</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>MyDatabase</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Amazon Postgres database.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Amazon PostgreSQL database.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Database primary username
+<td class="tableblock halign-left valign-top"><p class="tableblock">Database primary user name
 (<code>DBUser</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>postgres</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The database admin account username.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Database administrator account name.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Database primary password
 (<code>DBPassword</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The database admin account password.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Database administrator account password.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Database allocated storage
 (<code>DBAllocatedStorage</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>5</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The size of the database (GB).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Size of the database in gigabytes (GB).</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Database instance class
 (<code>DBInstanceClass</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>db.t2.micro</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the compute and memory capacity class of the database instance.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the compute and memory capacity class of the database instance.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Database storage type
@@ -1586,19 +1575,19 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">Database backup retention period
 (<code>DBBackupRetentionPeriod</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>7</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The number of days for which automatic database snapshots are retained.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Number of days for which to retain automatic database snapshots.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Multi-AZ deployment
 (<code>DBMultiAZ</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>True</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to provision a multi-AZ RDS instance.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Choose whether to provision a Multi-AZ Amazon RDS instance.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Database auto minor version upgrade
+<td class="tableblock halign-left valign-top"><p class="tableblock">Database auto-minor version upgrade
 (<code>DBAutoMinorVersionUpgrade</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>False</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Select true/false to setup auto minor version upgrade. e.g., 9.6.8 &#8594; 9.6.11.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enter "true" or "false" to set up auto-minor version upgrade (e.g., 9.6.8 to 9.6.11).</p></td>
 </tr>
 </tbody>
 </table>
@@ -1618,10 +1607,10 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Elastic container registry name
+<td class="tableblock halign-left valign-top"><p class="tableblock">Amazon Elastic Container Registry name
 (<code>ECRRepoName</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the elastic container registry.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Amazon Elastic Container Registry.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1641,21 +1630,21 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Salesforce objects S3 bucket name
+<td class="tableblock halign-left valign-top"><p class="tableblock">S3 bucket name for Salesforce objects
 (<code>S3BucketName</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the S3 bucket that stores your salesforce objects data.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the S3 bucket that stores data for Salesforce objects.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Lambda zip files S3 bucket name
+<td class="tableblock halign-left valign-top"><p class="tableblock">S3 bucket name for Lambda zip files
 (<code>LambdaZipBucket</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the S3 bucket that stores your lambda zip files.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the S3 bucket that stores your Lambda zip files.</p></td>
 </tr>
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 5. App flow configuration</caption>
+<caption class="title">Table 5. Amazon AppFlow configuration</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1673,13 +1662,13 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">Salesforce connector name
 (<code>Connection</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the salesforce connector.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Salesforce connector.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Salesforce objects name
 (<code>Objects</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the salesforce objects (e.g., Account,Contact,Lead,Opportunity,.).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Salesforce objects (e.g., Account, Contact, Lead, Opportunity).</p></td>
 </tr>
 </tbody>
 </table>
@@ -1711,22 +1700,22 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), periods (.) and forward slash (/).</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Quick Start S3 bucket region
+<td class="tableblock halign-left valign-top"><p class="tableblock">Quick Start S3 bucket Region
 (<code>QSS3BucketRegion</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>us-east-1</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The AWS region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Quick Start Git hub URL
+<td class="tableblock halign-left valign-top"><p class="tableblock">Quick Start GitHub URL
 (<code>GitHubUrl</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The GitHub URL for the Quick Start assets.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GitHub URL for the Quick Start assets.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Git hub branch name
+<td class="tableblock halign-left valign-top"><p class="tableblock">GitHub branch name
 (<code>GitHubBranch</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the GitHub branch that the code will pull from.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the GitHub branch that the code pulls from.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1764,7 +1753,7 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">Lambda security group ID
 (<code>LambdaSecurityGroupID</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of your existing lambda security group.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ID of your existing Lambda security group.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1787,19 +1776,19 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">Database name
 (<code>DBName</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of an existing Amazon Postgres database.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of an existing Amazon PostgreSQL database.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Database primary username
+<td class="tableblock halign-left valign-top"><p class="tableblock">Database primary user name
 (<code>DBUser</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of an existing database admin account username.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of an existing database administrator account name.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Database primary password
 (<code>DBPassword</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enter existing database admin account password.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enter an existing database administrator password.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Database connection string
@@ -1828,12 +1817,12 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">Custom resource (IAM role) ARN
 (<code>CustomResourceRoleARN</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Existing IAM role Amazon resource name (ARN) to be granted access to the custom resources.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Existing IAM role Amazon Resource Name (ARN) for accessing custom resources.</p></td>
 </tr>
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 10. App flow configuration</caption>
+<caption class="title">Table 10. Amazon AppFlow configuration</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1851,13 +1840,13 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">Salesforce connector name
 (<code>Connection</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the salesforce connector.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Salesforce connector.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Salesforce objects name
 (<code>Objects</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the salesforce objects (e.g., Account,Contact,Lead,..).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Salesforce objects (e.g., Account, Contact, Lead).</p></td>
 </tr>
 </tbody>
 </table>
@@ -1877,21 +1866,21 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Salesforce objects S3 bucket name
+<td class="tableblock halign-left valign-top"><p class="tableblock">S3 bucket name for Salesforce objects
 (<code>S3BucketName</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of an existing S3 bucket that stores your salesforce objects data.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of an existing S3 bucket for storing Salesforce objects.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Lambda zip files S3 bucket name
+<td class="tableblock halign-left valign-top"><p class="tableblock">S3 bucket name for Lambda zip files
 (<code>LambdaZipBucket</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of an existing S3 bucket that stores your lambda zip files.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of an existing S3 bucket for storing Lambda zip files.</p></td>
 </tr>
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 12. ECR configuration</caption>
+<caption class="title">Table 12. Amazon ECR configuration</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1906,7 +1895,7 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Elastic container registry image URI
+<td class="tableblock halign-left valign-top"><p class="tableblock">Amazon Elastic Container Registry image URI
 (<code>ImageURI</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Existing image URI.</p></td>
@@ -1932,16 +1921,16 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">Quick Start S3 bucket name
 (<code>QSS3BucketName</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>aws-quickstart</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">S3 bucket name for Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Quick Start S3 key prefix
 (<code>QSS3KeyPrefix</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>quickstart-amazon-appflow/</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), periods (.) and forward slash (/).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">S3 key prefix for Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, hyphens (-), periods (.) and forward slashes (/).</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Quick Start S3 bucket region
+<td class="tableblock halign-left valign-top"><p class="tableblock">Quick Start S3 bucket Region
 (<code>QSS3BucketRegion</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>us-east-1</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.</p></td>
@@ -1999,8 +1988,8 @@ and to share your customizations with others.</p>
 </html>
 <!--
 repo commit:
-c354454f7d480d1baa05a1cb6c4f5d9a754d4dfa
+8b78c5448655e156f2c28d0bcb927e73fddf0bb8
 
 submodule config:
- a9d6c5903745c1091793d3cd1f960948919c2c9f docs/boilerplate (heads/main)
+ a9d6c5903745c1091793d3cd1f960948919c2c9f docs/boilerplate (remotes/origin/revert-131-doc-edits-75-ga9d6c59)
 -->

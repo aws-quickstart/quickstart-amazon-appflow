@@ -3,4 +3,4 @@
 // Include links if helpful. 
 // You don't need to list AWS services or point to general info about AWS; the boilerplate already covers this.
 
-This Quick Start assumes familiarity with Amazon AppFlow, AWS CloudFormation, Amazon S3, AWS RDS, and Salesforce.
+This Quick Start assumes familiarity with Amazon AppFlow, AWS CloudFormation, Amazon S3, Amazon RDS, and Salesforce.

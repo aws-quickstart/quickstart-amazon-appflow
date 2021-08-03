@@ -2,4 +2,4 @@
 // Briefly describe the software. Use consistent and clear branding. 
 // Include the benefits of using the software on AWS, and provide details on usage scenarios.
 
-Amazon AppFlow is a fully managed integration service that enables you to securely transfer data between Software-as-a-Service (SaaS) applications like Salesforce, Zendesk, Slack, and ServiceNow, and AWS services like Amazon S3 and Amazon Redshift, in just a few clicks. This Quick Start deploys AppFlow for synchronization between Salesforce and an Amazon RDS PostgreSQL database.
+Amazon AppFlow is a fully managed integration service for transferring data between software as a service (SaaS) applications (for example, Salesforce, Zendesk, Slack, and ServiceNow) and AWS services. This Quick Start deploys Amazon AppFlow for synchronization between Salesforce and an Amazon RDS PostgreSQL database.
