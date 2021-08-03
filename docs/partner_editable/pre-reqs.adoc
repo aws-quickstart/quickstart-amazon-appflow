@@ -18,7 +18,7 @@
 .Amazon AppFlow connections
 image::../images/Connector1.png[Connector]
 +
-. Choose *Sandbox* or *Production*, based on the Salesforce instance type, and add a new connection name. Choose *Continue*.
+. Choose *Sandbox* or *Production*, based on the Salesforce instance type, and add a new connection name. Then choose *Continue*.
 +
 [#prereq2]
 .Create a new connection
@@ -30,7 +30,7 @@ image::../images/Connector2.png[Connector]
 .Entering Salesforce credentials
 image::../images/Connector3.png[Connector]
 +
-. Choose *Allow* to allow access.
+. Choose *Allow* to allow access to basic information and data.
 +
 [#prereq4]
 .Allowing Amazon AppFlow access to Salesforce
