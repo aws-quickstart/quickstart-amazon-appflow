@@ -21,3 +21,14 @@ internet access for resources in the private subnets.*
 * An Amazon AppFlow flow, created by an AWS Lambda function, to transfer Salesforce data to Amazon RDS and Amazon S3.
 
 [.small]#* The template that deploys the Quick Start into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.#
+
+[#architecture2]
+.Quick Start flow diagram for {partner-product-short-name} on AWS
+image::../images/amazon-appflow-flow-diagram.png[Flow]
+
+As shown in <<architecture2>>, this Quick Start sets up the following workflow:
+
+* Salesforce object data is transferred to Amazon AppFlow.
+* Amazon AppFlow relays Salesforce data to Amazon S3.
+* Amazon S3 relays object data to AWS Lambda, which sits inside a private subnet of your VPC.
+* AWS Lambda transfers your Salesforce data to Amazon RDS.
