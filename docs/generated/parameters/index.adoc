@@ -1,6 +1,3 @@
 
 === Parameters for deploying into a new VPC
 include::amazon-appflow-main.template.adoc[]
-
-=== Parameters for deploying into an existing VPC
-include::amazon-appflow-main-existing-cluster.template.adoc[]

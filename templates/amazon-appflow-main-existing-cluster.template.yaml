@@ -1,9 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Creation of scheduled Amazon AppFlow with existing resources. (qs-1rudmgma4)
 Metadata:
-  QuickStartDocumentation:
-    EntrypointName: "Parameters for deploying into an existing VPC"
-    Order: "2"
   cfn-lint:
     config:
       ignore_checks:
