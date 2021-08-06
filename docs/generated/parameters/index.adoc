@@ -1,3 +1,6 @@
 
 === Parameters for deploying into a new VPC
 include::amazon-appflow-main.template.adoc[]
+
+=== Parameters for deploying additional AppFlows for new Salesforce objects after deploying Amazon Appflow in a new VPC
+include::amazon-appflow-main-existing-cluster.template.adoc[]
