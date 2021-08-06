@@ -33,7 +33,7 @@ Each deployment takes about {deployment_time} to complete.
 ^|https://fwd.aws/PpzVP?[Deploy {partner-product-short-name} into a new VPC on AWS^]
 ^|https://fwd.aws/vQw37?[View template^]
 
-^|https://fwd.aws/ARV3P?[Deploy {partner-product-short-name} into an existing VPC on AWS^]
+^|https://fwd.aws/ARV3P?[Deploy additional AppFlows for new Salesforce objects after deploying Amazon Appflow in a new VPC^]
 ^|https://fwd.aws/q4nMn?[View template^]
 |===
 +
