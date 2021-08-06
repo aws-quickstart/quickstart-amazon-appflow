@@ -173,9 +173,11 @@ Parameters:
   GitHubUrl:
     Description: GitHub URL for the Quick Start assets.
     Type: String
+    Default: https://github.com/aws-quickstart/quickstart-amazon-appflow.git
   GitHubBranch:
     Description: Name of the GitHub branch that the code pulls from.
     Type: String
+    Default: main
   ECRRepoName:
     AllowedPattern: ^[0-9a-z-/_]*$
     ConstraintDescription: Must begin with a letter and can only contain lowercase letters, numbers and forward slashes.
