@@ -40,4 +40,4 @@ image::../images/Connector4.png[Connector]
 +
 [#prereq4]
 .Amazon AppFlow connections
-image::../images/Connector4.png[Connector]
+image::../images/Connector5.png[Connector]
